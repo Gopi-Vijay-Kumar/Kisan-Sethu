@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Kisan Sethu | Eligibility Verified Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #f4f7f2; color: #2d3436; padding: 20px; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: linear-gradient(135deg, #1b4d3e, #2d6a4f); color: white; padding: 3rem 1rem; border-radius: 20px; text-align: center; margin-bottom: 2rem; }
+        .filter-card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 2rem; border: 1px solid #e0e0e0; }
+        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; }
+        .field label { display: block; font-weight: 600; color: #1b4d3e; margin-bottom: 8px; font-size: 0.85rem; }
+        select, input { width: 100%; padding: 12px; border: 1.5px solid #dcdde1; border-radius: 10px; font-size: 0.95rem; outline: none; }
+        .btn-primary { background: #ff9f43; color: #1b4d3e; border: none; padding: 15px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 1.8rem; box-shadow: 0 4px 0 #e67e22; transition: transform 0.1s; }
+        .btn-primary:active { transform: translateY(4px); box-shadow: none; }
+        .notif-bar { display: none; background: #fff3cd; border-left: 5px solid #ffca28; padding: 1rem; border-radius: 10px; margin-bottom: 2rem; }
+        .schemes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
+        .otp-card { background: #ffffff; padding: 1.5rem; border-radius: 15px; border: 1px solid #e0e0e0; margin-bottom: 2rem; }
+        .otp-row { display: grid; grid-template-columns: 1fr auto; gap: 0.8rem; align-items: end; margin-top: 0.8rem; }
+        .btn-secondary { background: #1b4d3e; color: white; border: none; padding: 12px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        .btn-secondary:disabled { background: #9aa8a2; cursor: not-allowed; }
+        .otp-status { margin-top: 0.8rem; font-weight: 600; color: #2d6a4f; min-height: 1.4rem; }
+        .sms-link { display: none; background: #2d6a4f; color: white; text-align: center; text-decoration: none; padding: 12px 16px; border-radius: 10px; font-weight: 700; margin-top: 1rem; }
+        @media (max-width: 640px) {
+            .otp-row { grid-template-columns: 1fr; }
+        }
+        
+        .card { background: white; padding: 1.5rem; border-radius: 15px; border: 1px solid #e0e0e0; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .land-tag { font-size: 0.75rem; font-weight: 700; color: #2d6a4f; background: #e8f5e9; padding: 4px 8px; border-radius: 5px; display: inline-block; margin-bottom: 10px; }
+        
+        .prob-container { margin-bottom: 15px; }
+        .prob-text { font-size: 0.8rem; font-weight: 700; color: #2d6a4f; margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .prob-bar-bg { width: 100%; height: 8px; background: #e0e0e0; border-radius: 10px; overflow: hidden; }
+        .prob-bar-fill { height: 100%; background: linear-gradient(to right, #ff9f43, #2d6a4f); transition: width 1s ease-in-out; }
+        
+        .benefit { background: #f0fff4; color: #2d6a4f; padding: 10px; border-radius: 8px; margin: 0.5rem 0; font-weight: 600; font-size: 0.9rem; }
+        .info-section { background: #f8f9fa; padding: 12px; border-radius: 8px; margin-top: 10px; border-left: 3px solid #1b4d3e; font-size: 0.85rem; }
+        .info-section h4 { margin-bottom: 5px; color: #1b4d3e; font-size: 0.9rem; }
+        .info-section ul { padding-left: 18px; color: #4b4b4b; margin-bottom: 10px; }
+        .external-link { background: #1b4d3e; color: white; text-decoration: none; text-align: center; padding: 12px; border-radius: 8px; margin-top: auto; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1 id="txt-app-name">Kisan Sethu</h1>
+        <p id="txt-app-slogan"></p>
+    </div>
+
+    <div class="filter-card">
+        <div class="grid-inputs">
+            <div class="field">
+                <label id="txt-label-lang">Language</label>
+                <select id="langSelect" onchange="applyTranslation()">
+                    <option value="en">English</option>
+                    <option value="hi">हिन्दी (Hindi)</option>
+                    <option value="te">తెలుగు (Telugu)</option>
+                </select>
+            </div>
+            <div class="field">
+                <label id="txt-label-state">State</label>
+                <select id="stateSelect"></select>
+            </div>
+            <div class="field">
+                <label id="txt-label-caste">Category</label>
+                <select id="casteSelect"></select>
+            </div>
+            <div class="field">
+                <label id="txt-label-income">Income Range</label>
+                <select id="incomeSelect"></select>
+            </div>
+            <div class="field">
+                <label id="txt-label-crop">Crop</label>
+                <select id="cropSelect"></select>
+            </div>
+            <div class="field">
+                <label id="txt-label-land">Land (Acres)</label>
+                <input type="number" id="landInput" placeholder="Enter size" min="0.1" step="0.1">
+            </div>
+        </div>
+        <button class="btn-primary" id="txt-btn-match" onclick="findSchemes()">Verify Eligibility</button>
+    </div>
+
+    <div id="deadlineAlert" class="notif-bar">
+        <strong id="txt-alert-title">Important Deadlines:</strong>
+        <div id="deadlineList"></div>
+    </div>
+
+    <div class="otp-card" id="notificationSection" style="display: none;">
+        <div class="grid-inputs">
+            <div class="field">
+                <label for="phoneInput" id="txt-label-phone">Phone Number</label>
+                <div class="otp-row">
+                    <input type="tel" id="phoneInput" placeholder="Enter 10 digit mobile number" maxlength="10">
+                    <button class="btn-secondary" id="txt-btn-send-otp" type="button" onclick="sendOtp()">Send OTP</button>
+                </div>
+            </div>
+            <div class="field" id="otpStep" style="display: none;">
+                <label for="otpInput" id="txt-label-otp">OTP</label>
+                <input type="text" id="otpInput" placeholder="Enter OTP" maxlength="6">
+            </div>
+        </div>
+        <button class="btn-primary" id="verifyOtpBtn" type="button" onclick="verifyOtpAndNotify()" style="display: none;">Verify OTP & Send Notification</button>
+        <div class="otp-status" id="otpStatus"></div>
+        <a class="sms-link" id="smsLink" href="#">Open SMS Notification</a>
+    </div>
+
+    <h2 class="results-header" id="txt-results-count">Search Results</h2>
+    <div id="schemesGrid" class="schemes-grid"></div>
+</div>
+
+<script>
+    const dataKeys = {
+        states: ["Andhra Pradesh", "Bihar", "Haryana", "Karnataka", "Madhya Pradesh", "Maharashtra", "Odisha", "Punjab", "Rajasthan", "Tamil Nadu", "Telangana", "Uttar Pradesh", "West Bengal"],
+        crops: ["Rice", "Wheat", "Maize", "Millets", "Pulses", "Sugarcane", "Cotton", "Oilseeds", "Vegetables"],
+        castes: ["General", "OBC", "SC", "ST"]
+    };
+
+    // Scheme criteria with explicit min/max land requirements
+    const masterSchemes = [
+        { id: 'pmk', states: 'all', crops: 'all', minLand: 0.1, maxLand: 5.0, maxIncome: 9999999, url: 'https://pmkisan.gov.in', dl: '31-07-2026' },
+        { id: 'fby', states: 'all', crops: 'all', minLand: 0.1, maxLand: 100.0, maxIncome: 9999999, url: 'https://pmfby.gov.in', dl: '15-08-2026' },
+        { id: 'rb_ts', states: ['Telangana'], crops: 'all', minLand: 0.1, maxLand: 100.0, maxIncome: 9999999, url: 'http://rythubandhu.telangana.gov.in', dl: '30-06-2026' },
+        { id: 'kalia_od', states: ['Odisha'], crops: 'all', minLand: 0.1, maxLand: 5.0, maxIncome: 150000, url: 'https://kalia.odisha.gov.in', dl: 'Ongoing' },
+        { id: 'kb_wb', states: ['West Bengal'], crops: 'all', minLand: 0.1, maxLand: 100.0, maxIncome: 9999999, url: 'https://matirfatha.net', dl: '31-12-2026' },
+        { id: 'ysr_ap', states: ['Andhra Pradesh'], crops: 'all', minLand: 0.1, maxLand: 5.0, maxIncome: 200000, url: 'https://ysrrythubharosa.ap.gov.in', dl: '15-07-2026' },
+        { id: 'bh_desp', states: ['Bihar'], crops: ['Rice', 'Wheat', 'Maize'], minLand: 0.1, maxLand: 10.0, maxIncome: 200000, url: 'https://dbtagriculture.bihar.gov.in', dl: '20-11-2026' }
+    ];
+
+    const dictionary = {
+        en: {
+            appName: "Kisan Sethu", slogan: "Precision Eligibility Verification for Farmers",
+            labelLang: "Language", labelState: "State", labelCrop: "Crop", labelLand: "Land (Acres)", labelCaste: "Category", labelIncome: "Annual Income Range",
+            btnMatch: "Verify Eligibility", alertTitle: "Action Required Before:", resultsCount: "Eligible Schemes:",
+            labelPhone: "Phone Number", phonePlaceholder: "Enter 10 digit mobile number", labelOtp: "OTP", otpPlaceholder: "Enter OTP",
+            btnSendOtp: "Send OTP", btnVerifyOtp: "Verify OTP & Send Notification", invalidPhone: "Please enter a valid 10 digit Indian mobile number.",
+            otpSentAlert: "OTP sent successfully", otpSentStatus: "OTP sent successfully. Please enter OTP.", sendOtpFirst: "Please send OTP first.",
+            invalidOtp: "Invalid OTP. Please try again.", notificationSent: "Notification sent to {phone} successfully.",
+            howReg: "Steps to Register:", docsReq: "Required Documents:", viewScheme: "Apply Now", benefit: "Benefit:", none: "-- Select --", above: "Above ₹5,00,000", probLabel: "Success Probability",
+            errorLand: "Land size must be greater than 0 to qualify for these schemes.", noMatch: "Your profile does not meet the specific criteria for available schemes.",
+            landCriteriaMet: "Meets land criteria",
+            states: dataKeys.states, crops: dataKeys.crops, castes: dataKeys.castes,
+            schemes: {
+                pmk: { t: "PM-Kisan Nidhi", d: "Small/Marginal farmer income support.", b: "₹6,000 annually", r: ["Aadhaar-Mobile linking", "Portal Registration"], docs: ["Aadhaar", "Land Records", "Bank Passbook"] },
+                fby: { t: "PM Crop Insurance", d: "Weather and yield protection.", b: "Loss reimbursement", r: ["Bank application", "Sowing declaration"], docs: ["Land Ownership", "Sowing Cert"] },
+                rb_ts: { t: "Rythu Bandhu", d: "Investment support for TS land owners.", b: "₹10,000 / acre", r: ["Mandal Office visit"], docs: ["Pattadar Passbook", "Aadhaar"] },
+                kalia_od: { t: "KALIA Odisha", d: "Financial help for small farmers.", b: "₹25,000 support", r: ["GP level application"], docs: ["Ration Card", "Aadhaar"] },
+                kb_wb: { t: "Krushak Bandhu", d: "Bengal farmer welfare program.", b: "₹10,000 annually", r: ["BDO Office submission"], docs: ["ROR", "Voter ID"] },
+                ysr_ap: { t: "YSR Rythu Bharosa", d: "Income support for AP farmers.", b: "₹13,500 / year", r: ["RBK center registration"], docs: ["Aadhaar", "Land Records"] },
+                bh_desp: { t: "Diesel Subsidy", d: "Fuel cost support for Bihar farmers.", b: "₹75 / liter", r: ["DBT Bihar portal"], docs: ["Reg ID", "Diesel Bills"] }
+            }
+        },
+        hi: {
+            appName: "किसान सेतु", slogan: "किसानों के लिए सटीक पात्रता सत्यापन",
+            labelLang: "भाषा", labelState: "राज्य", labelCrop: "फसल", labelLand: "भूमि (एकड़)", labelCaste: "श्रेणी", labelIncome: "वार्षिक आय सीमा",
+            btnMatch: "पात्रता जांचें", alertTitle: "अंतिम तिथि:", resultsCount: "पात्र योजनाएं:",
+            labelPhone: "मोबाइल नंबर", phonePlaceholder: "10 अंकों का मोबाइल नंबर दर्ज करें", labelOtp: "ओटीपी", otpPlaceholder: "ओटीपी दर्ज करें",
+            btnSendOtp: "ओटीपी भेजें", btnVerifyOtp: "ओटीपी सत्यापित करें और सूचना भेजें", invalidPhone: "कृपया सही 10 अंकों का भारतीय मोबाइल नंबर दर्ज करें।",
+            otpSentAlert: "ओटीपी सफलतापूर्वक भेजा गया", otpSentStatus: "ओटीपी सफलतापूर्वक भेजा गया। कृपया ओटीपी दर्ज करें।", sendOtpFirst: "कृपया पहले ओटीपी भेजें।",
+            invalidOtp: "गलत ओटीपी। कृपया फिर से प्रयास करें।", notificationSent: "{phone} पर सूचना सफलतापूर्वक भेजी गई।",
+            howReg: "पंजीकरण प्रक्रिया:", docsReq: "आवश्यक दस्तावेज:", viewScheme: "आवेदन करें", benefit: "लाभ:", none: "-- चुनें --", above: "₹5,00,000 से अधिक", probLabel: "सफलता की संभावना",
+            errorLand: "इन योजनाओं के लिए भूमि का आकार 0 से अधिक होना चाहिए।", noMatch: "आपका प्रोफाइल उपलब्ध योजनाओं के मानदंडों को पूरा नहीं करता है।",
+            landCriteriaMet: "भूमि मानदंड पूरा हुआ",
+            states: ["आंध्र प्रदेश", "बिहार", "हरियाणा", "कर्नाटक", "मध्य प्रदेश", "महाराष्ट्र", "ओडिशा", "पंजाब", "राजस्थान", "तमिलनाडु", "तेलंगाना", "उत्तर प्रदेश", "पश्चिम बंगाल"],
+            crops: ["चावल", "गेहूं", "मक्का", "बाजरा", "दलहन", "गन्ना", "कपास", "तिलहन", "सब्जियां"],
+            castes: ["सामान्य", "ओबीसी", "एससी", "एसटी"],
+            schemes: {
+                pmk: { t: "पीएम-किसान निधि", d: "छोटे किसानों के लिए आय सहायता।", b: "₹6,000 सालाना", r: ["आधार-मोबाइल लिंकिंग", "पोर्टल पंजीकरण"], docs: ["आधार", "भूमि खतौनी", "पासबुक"] },
+                fby: { t: "पीएम फसल बीमा", d: "मौसम और पैदावार से सुरक्षा।", b: "नुकसान की भरपाई", r: ["बैंक आवेदन"], docs: ["भूमि स्वामित्व", "आईडी प्रूफ"] },
+                rb_ts: { t: "रायथु बंधु", d: "तेलंगाना किसानों के लिए निवेश सहायता।", b: "₹10,000 / एकड़", r: ["मंडल कार्यालय"], docs: ["पट्टादार पासbook", "आधार"] },
+                kalia_od: { t: "कालिया ओडिशा", d: "छोटे किसानों के लिए नकद सहायता।", b: "₹25,000 सहायता", r: ["पंचायत में आवेदन"], docs: ["राशन कार्ड", "आधार"] },
+                kb_wb: { t: "कृषक बंधु", d: "बंगाल किसान कल्याण कार्यक्रम।", b: "₹10,000 सालाना", r: ["BDO ऑफिस"], docs: ["भूमि रिकॉर्ड", "वोटर आईडी"] },
+                ysr_ap: { t: "YSR रायथु भरोसा", d: "आंध्र प्रदेश किसानों के लिए मदद।", b: "₹13,500 / वर्ष", r: ["RBK केंद्र"], docs: ["आधार", "भूमि दस्तावेज"] },
+                bh_desp: { t: "डीजल सब्सिडी", d: "बिहार किसानों के लिए ईंधन सहायता।", b: "₹75 / लीटर", r: ["DBT बिहार पोर्टल"], docs: ["पंजीकरण आईडी", "डीजल बिल"] }
+            }
+        },
+        te: {
+            appName: "కిసాన్ సేతు", slogan: "రైతుల కోసం ఖచ్చితమైన అర్హత వెరిఫికేషన్",
+            labelLang: "భాష", labelState: "రాష్ట్రం", labelCrop: "పంట", labelLand: "భూమి (ఎకరాలు)", labelCaste: "వర్గం", labelIncome: "వార్షిక ఆదాయ పరిమితి",
+            btnMatch: "అర్హతను తనిఖీ చేయండి", alertTitle: "ముగింపు తేదీ:", resultsCount: "అర్హత కలిగిన పథకాలు:",
+            labelPhone: "మొబైల్ నంబర్", phonePlaceholder: "10 అంకెల మొబైల్ నంబర్ నమోదు చేయండి", labelOtp: "ఓటీపీ", otpPlaceholder: "ఓటీపీ నమోదు చేయండి",
+            btnSendOtp: "ఓటీపీ పంపండి", btnVerifyOtp: "ఓటీపీ ధృవీకరించి నోటిఫికేషన్ పంపండి", invalidPhone: "దయచేసి సరైన 10 అంకెల భారతీయ మొబైల్ నంబర్ నమోదు చేయండి.",
+            otpSentAlert: "ఓటీపీ విజయవంతంగా పంపబడింది", otpSentStatus: "ఓటీపీ విజయవంతంగా పంపబడింది. దయచేసి ఓటీపీ నమోదు చేయండి.", sendOtpFirst: "దయచేసి ముందుగా ఓటీపీ పంపండి.",
+            invalidOtp: "చెల్లని ఓటీపీ. దయచేసి మళ్లీ ప్రయత్నించండి.", notificationSent: "{phone} కు నోటిఫికేషన్ విజయవంతంగా పంపబడింది.",
+            howReg: "నమోదు విధానం:", docsReq: "కావలసిన పత్రాలు:", viewScheme: "దరఖాస్తు చేయండి", benefit: "ప్రయోజనం:", none: "-- ఎంచుకోండి --", above: "₹5,00,000 కంటే ఎక్కువ", probLabel: "విజయ సంభావ్యత",
+            errorLand: "పథకాలకు అర్హత పొందడానికి భూమి పరిమాణం 0 కంటే ఎక్కువ ఉండాలి.", noMatch: "మీ ప్రొఫైల్ పథకాల నిబంధనలకు సరిపోలలేదు.",
+            landCriteriaMet: "భూమి నిబంధనలు సరిపోయాయి",
+            states: ["ఆంధ్రప్రదేశ్", "బీహార్", "హర్యానా", "కర్ణాటక", "మధ్యప్రదేశ్", "మహారాష్ట్ర", "ఒడిశా", "పంజాబ్", "రాజస్థాన్", "తమిళనాడు", "తెలంగాణ", "ఉత్తర ప్రదేశ్", "పశ్చిమ బెంగాల్"],
+            crops: ["వరి", "గోధుమ", "మొక్కజొన్న", "చిరుధాన్యాలు", "పప్పులు", "చెరకు", "పత్తి", "నూనెగింజలు", "కూరగాయలు"],
+            castes: ["జనరల్", "ఓబీసీ", "ఎస్సీ", "ఎస్టీ"],
+            schemes: {
+                pmk: { t: "పీఎం-కిసాన్ నిధి", d: "చిన్న రైతులకు ఆదాయ మద్దతు.", b: "ఏడాదికి ₹6,000", r: ["ఆధార్-మొబైల్ లింక్", "రిజిస్ట్రేషన్"], docs: ["ఆధార్", "భూమి పత్రాలు", "బ్యాంక్ పాస్‌బుక్"] },
+                fby: { t: "పీఎం పంట బీమా", d: "వాతావరణ నష్టం నుండి రక్షణ.", b: "నష్ట పరిహారం", r: ["బ్యాంకులో దరఖాస్తు"], docs: ["భూమి యాజమాన్యం", "గుర్తింపు కార్డు"] },
+                rb_ts: { t: "రైతు బంధు", d: "తెలంగాణ రైతులకు పెట్టుబడి మద్దతు.", b: "ఎకరాకు ₹10,000", r: ["మండల ఆఫీసు"], docs: ["పట్టాదారు పాస్‌బుక్", "ఆధార్"] },
+                kalia_od: { t: "కాలియా ఒడిశా", d: "చిన్న రైతులకు ఆర్థిక సహాయం.", b: "₹25,000 సహాయం", r: ["పంచాయితీలో నమోదు"], docs: ["రేషన్ కార్డు", "ఆధార్"] },
+                kb_wb: { t: "కృషక్ బంధు", d: "బెంగాల్ రైతు సంక్షేమ పథకం.", b: "ఏడాదికి ₹10,000", r: ["BDO ఆఫీసు"], docs: ["భూమి రికార్డులు", "ఓటర్ ఐడి"] },
+                ysr_ap: { t: "YSR రైతు భరోసా", d: "ఆంధ్ర రైతులకు ఆర్థిక సహాయం.", b: "ఏడాదికి ₹13,500", r: ["RBK కేంద్రం"], docs: ["ఆధార్", "భూమి పత్రాలు"] },
+                bh_desp: { t: "డీజిల్ సబ్సిడీ", d: "బీహార్ రైతులకు ఇంధన సబ్సిడీ.", b: "లీటరుకు ₹75", r: ["DBT బీహార్ పోర్టల్"], docs: ["నమోదు ఐడి", "డీజిల్ బిల్లు"] }
+            }
+        }
+    };
+
+    const incomeRanges = [[0, 50000], [50001, 100000], [100001, 150000], [150001, 200000], [200001, 300000], [300001, 500000]];
+    const generatedOtp = "123456";
+    let otpSent = false;
+    let latestEligibleSchemes = [];
+
+    function getValidPhoneNumber() {
+        const lang = document.getElementById('langSelect').value;
+        const t = dictionary[lang];
+        const phone = document.getElementById('phoneInput').value.trim();
+        if (!/^[6-9]\d{9}$/.test(phone)) {
+            alert(t.invalidPhone);
+            return "";
+        }
+        return phone;
+    }
+
+    function sendOtp() {
+        const lang = document.getElementById('langSelect').value;
+        const t = dictionary[lang];
+        const phone = getValidPhoneNumber();
+        if (!phone) return;
+
+        alert(t.otpSentAlert);
+        otpSent = true;
+        document.getElementById('otpInput').value = "";
+        document.getElementById('otpStep').style.display = 'block';
+        document.getElementById('verifyOtpBtn').style.display = 'block';
+        document.getElementById('otpStatus').innerText = t.otpSentStatus;
+        document.getElementById('smsLink').style.display = 'none';
+    }
+
+    function resetNotificationSection() {
+        otpSent = false;
+        document.getElementById('phoneInput').value = "";
+        document.getElementById('otpInput').value = "";
+        document.getElementById('otpStep').style.display = 'none';
+        document.getElementById('verifyOtpBtn').style.display = 'none';
+        document.getElementById('otpStatus').innerText = "";
+        document.getElementById('smsLink').style.display = 'none';
+    }
+
+    function buildNotificationMessage() {
+        const lang = document.getElementById('langSelect').value;
+        const t = dictionary[lang];
+        if (!latestEligibleSchemes.length) {
+            return "Kisan Sethu: No eligible schemes were found for your profile.";
+        }
+
+        const schemeNames = latestEligibleSchemes.map(s => t.schemes[s.id].t).join(", ");
+        const deadlines = latestEligibleSchemes
+            .filter(s => s.dl !== 'Ongoing')
+            .map(s => `${t.schemes[s.id].t} deadline ${s.dl}`)
+            .join("; ");
+
+        return `Kisan Sethu: OTP verified. You are eligible for ${schemeNames}. ${deadlines ? deadlines + ". " : ""}Please open the portal to apply.`;
+    }
+
+    function verifyOtpAndNotify() {
+        const lang = document.getElementById('langSelect').value;
+        const t = dictionary[lang];
+        const phone = getValidPhoneNumber();
+        const enteredOtp = document.getElementById('otpInput').value.trim();
+        const status = document.getElementById('otpStatus');
+        const smsLink = document.getElementById('smsLink');
+
+        if (!otpSent) {
+            alert(t.sendOtpFirst);
+            return;
+        }
+
+        if (enteredOtp !== generatedOtp) {
+            status.innerText = t.invalidOtp;
+            smsLink.style.display = 'none';
+            return;
+        }
+
+        smsLink.style.display = 'none';
+        status.innerText = t.notificationSent.replace("{phone}", phone);
+    }
+
+    function applyTranslation() {
+        const lang = document.getElementById('langSelect').value;
+        const t = dictionary[lang];
+        document.getElementById('txt-app-name').innerText = t.appName;
+        document.getElementById('txt-app-slogan').innerText = t.slogan;
+        document.getElementById('txt-label-lang').innerText = t.labelLang;
+        document.getElementById('txt-label-state').innerText = t.labelState;
+        document.getElementById('txt-label-crop').innerText = t.labelCrop;
+        document.getElementById('txt-label-land').innerText = t.labelLand;
+        document.getElementById('txt-label-caste').innerText = t.labelCaste;
+        document.getElementById('txt-label-income').innerText = t.labelIncome;
+        document.getElementById('txt-btn-match').innerText = t.btnMatch;
+        document.getElementById('txt-results-count').innerText = t.resultsCount;
+        document.getElementById('txt-alert-title').innerText = t.alertTitle;
+        document.getElementById('txt-label-phone').innerText = t.labelPhone;
+        document.getElementById('phoneInput').placeholder = t.phonePlaceholder;
+        document.getElementById('txt-label-otp').innerText = t.labelOtp;
+        document.getElementById('otpInput').placeholder = t.otpPlaceholder;
+        document.getElementById('txt-btn-send-otp').innerText = t.btnSendOtp;
+        document.getElementById('verifyOtpBtn').innerText = t.btnVerifyOtp;
+
+        const sSelect = document.getElementById('stateSelect');
+        sSelect.innerHTML = `<option value="">${t.none}</option>` + t.states.map((s, i) => `<option value="${dataKeys.states[i]}">${s}</option>`).join('');
+        
+        const cSelect = document.getElementById('cropSelect');
+        cSelect.innerHTML = `<option value="">${t.none}</option>` + t.crops.map((c, i) => `<option value="${dataKeys.crops[i]}">${c}</option>`).join('');
+
+        const casteSelect = document.getElementById('casteSelect');
+        casteSelect.innerHTML = `<option value="">${t.none}</option>` + t.castes.map((c, i) => `<option value="${dataKeys.castes[i]}">${c}</option>`).join('');
+
+        const incomeSelect = document.getElementById('incomeSelect');
+        let incomeOptions = `<option value="">${t.none}</option>`;
+        incomeRanges.forEach(range => {
+            incomeOptions += `<option value="${range[1]}">₹${range[0].toLocaleString()} - ₹${range[1].toLocaleString()}</option>`;
+        });
+        incomeOptions += `<option value="9999999">${t.above}</option>`;
+        incomeSelect.innerHTML = incomeOptions;
+        document.getElementById('schemesGrid').innerHTML = "";
+        document.getElementById('notificationSection').style.display = 'none';
+        resetNotificationSection();
+    }
+
+    function calculateProbability(land, income, caste) {
+        let base = 75;
+        if (land <= 2.0) base += 10;
+        if (income <= 80000) base += 10;
+        if (caste !== 'General') base += 3;
+        return Math.min(base, 98);
+    }
+
+    function findSchemes() {
+        const lang = document.getElementById('langSelect').value;
+        const t = dictionary[lang];
+        const userState = document.getElementById('stateSelect').value;
+        const userCrop = document.getElementById('cropSelect').value;
+        const userCaste = document.getElementById('casteSelect').value;
+        const userMaxIncome = parseInt(document.getElementById('incomeSelect').value) || 0;
+        const userLand = parseFloat(document.getElementById('landInput').value) || 0;
+
+        // FIXED LOGIC: Strict boundary check
+        if (userLand <= 0 || isNaN(userLand)) { 
+            alert(t.errorLand); 
+            document.getElementById('schemesGrid').innerHTML = "";
+            document.getElementById('notificationSection').style.display = 'none';
+            resetNotificationSection();
+            return; 
+        }
+
+        if (!userState || !userCrop || !userCaste || !userMaxIncome) { 
+            alert("Please complete all profile details."); 
+            document.getElementById('notificationSection').style.display = 'none';
+            resetNotificationSection();
+            return; 
+        }
+
+        const eligible = masterSchemes.filter(s => {
+            const stateMatch = s.states === 'all' || s.states.includes(userState);
+            const cropMatch = s.crops === 'all' || s.crops.includes(userCrop);
+            const incomeMatch = userMaxIncome <= s.maxIncome;
+            
+            // LAND CRITERIA GATE
+            const landMatch = (userLand >= s.minLand && userLand <= s.maxLand);
+            
+            return stateMatch && cropMatch && incomeMatch && landMatch;
+        });
+        latestEligibleSchemes = eligible;
+
+        const deadlines = eligible.filter(s => s.dl !== 'Ongoing');
+        document.getElementById('deadlineAlert').style.display = deadlines.length > 0 ? 'block' : 'none';
+        document.getElementById('deadlineList').innerHTML = deadlines.map(s => `• ${t.schemes[s.id].t}: <strong>${s.dl}</strong>`).join('<br>');
+
+        const prob = calculateProbability(userLand, userMaxIncome, userCaste);
+        const grid = document.getElementById('schemesGrid');
+        document.getElementById('notificationSection').style.display = eligible.length > 0 ? 'block' : 'none';
+        resetNotificationSection();
+        
+        grid.innerHTML = eligible.map(s => {
+            const info = t.schemes[s.id];
+            return `
+            <div class="card">
+                <div class="prob-container">
+                    <div class="prob-text"><span>${t.probLabel}</span><span>${prob}%</span></div>
+                    <div class="prob-bar-bg"><div class="prob-bar-fill" style="width: ${prob}%"></div></div>
+                </div>
+                <div class="land-tag">✓ ${t.landCriteriaMet} (${s.minLand}-${s.maxLand} ac)</div>
+                <h3>${info.t}</h3>
+                <p style="margin-bottom:8px">${info.d}</p>
+                <div class="benefit">${t.benefit} ${info.b}</div>
+                <div class="info-section">
+                    <h4>${t.howReg}</h4>
+                    <ul>${info.r.map(step => `<li>${step}</li>`).join('')}</ul>
+                    <h4>${t.docsReq}</h4>
+                    <ul>${info.docs.map(doc => `<li>${doc}</li>`).join('')}</ul>
+                </div>
+                <a href="${s.url}" target="_blank" class="external-link">${t.viewScheme}</a>
+            </div>`;
+        }).join('') || `<p style="grid-column: 1/-1; text-align: center; padding: 2rem;">${t.noMatch}</p>`;
+    }
+
+    window.onload = applyTranslation;
+</script>
+</body>
+</html>
